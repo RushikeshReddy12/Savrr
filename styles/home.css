@@ -1,0 +1,121 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+:root {
+  --bg-gradient: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+  --card-bg: rgba(255, 255, 255, 0.25);
+  --card-blur: blur(12px);
+  --shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  --primary-color: #ff6b6b;
+  --primary-hover: #ff4f4f;
+  --secondary-color: #4ecdc4;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg-gradient);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: #fff;
+}
+
+/* Header */
+header {
+  background: var(--card-bg);
+  backdrop-filter: var(--card-blur);
+  padding: 15px 25px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  box-shadow: var(--shadow);
+  border-radius: 0 0 20px 20px;
+}
+
+header nav a {
+  text-decoration: none;
+  color: white;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 10px;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+header nav a:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+/* Centered container for home, login, register */
+.center-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+}
+
+.card {
+  background: var(--card-bg);
+  backdrop-filter: var(--card-blur);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  padding: 30px;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+.card h1 {
+  margin-bottom: 20px;
+  font-size: 2rem;
+}
+
+/* Buttons */
+.button {
+  display: inline-block;
+  padding: 12px 20px;
+  border-radius: 12px;
+  background: var(--primary-color);
+  color: white;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.3s ease, transform 0.2s ease;
+  margin: 8px;
+}
+
+.button:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+}
+
+.button.secondary {
+  background: var(--secondary-color);
+}
+
+.button.secondary:hover {
+  background: #38a3a0;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 15px;
+  background: var(--card-bg);
+  backdrop-filter: var(--card-blur);
+  box-shadow: var(--shadow);
+  border-radius: 20px 20px 0 0;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
