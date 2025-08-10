@@ -1,0 +1,113 @@
+/* create-account.css - scoped to the Create Account form */
+* { box-sizing: border-box; }
+
+body {
+  font-family: 'Poppins', Arial, sans-serif;
+  background: linear-gradient(to right, #ffecd2, #fcb69f);
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Card */
+.form-container {
+  background: #fff;
+  width: 420px;
+  max-width: 94%;
+  padding: 28px;
+  border-radius: 14px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.10);
+  animation: fadeIn 0.6s ease;
+}
+
+/* Heading */
+.form-container h2 {
+  margin: 0 0 16px 0;
+  color: #ff7e5f;
+  font-size: 1.5rem;
+  text-align: left;
+}
+
+/* form grid - stacks rows and keeps consistent spacing */
+.form-container form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+/* each field row */
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+}
+
+/* labels */
+.form-row label {
+  font-size: 0.88rem;
+  color: #444;
+  font-weight: 600;
+}
+
+/* inputs and selects */
+.form-row input,
+.form-row select {
+  width: 100%;
+  height: 46px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+  background: #fff;
+  transition: box-shadow .18s ease, border-color .18s ease;
+}
+
+.form-row input::placeholder { color: #bdbdbd; }
+
+.form-row input:focus,
+.form-row select:focus {
+  outline: none;
+  border-color: #ff7e5f;
+  box-shadow: 0 6px 20px rgba(255,126,95,0.12);
+}
+
+/* submit button */
+.btn-primary {
+  margin-top: 6px;
+  width: 100%;
+  height: 48px;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(90deg, #ff7e5f, #feb47b);
+  cursor: pointer;
+  transition: transform .16s ease, box-shadow .16s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(235,103,80,0.18);
+}
+
+/* secondary link */
+.form-container .meta {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.form-container .meta a { color: #ff7e5f; text-decoration: none; font-weight: 600; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* responsive */
+@media (max-width: 440px) {
+  .form-container { padding: 18px; width: 94%; }
+}

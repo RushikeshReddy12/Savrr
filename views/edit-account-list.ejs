@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/edit-account.css">
+</head>
+<body>
+  <div class="edit-container">
+    <h1>Edit Account</h1>
+    <div class="button-grid">
+        <% accounts.forEach(account => { %>
+        <form action="/edit-account/<%= account.id %>" method="get">
+            <button type="submit" class="dashboard-btn">
+            <%= account.shortcut_name %> - <%= account.bank_name %>
+            </button>
+        </form>
+        <% }) %>
+    </div>
+    </div>
+</body>
+</html>

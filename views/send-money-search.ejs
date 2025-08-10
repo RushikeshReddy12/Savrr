@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Send Money - Search</title>
+    <link rel="stylesheet" href="/send-money.css">
+</head>
+<body>
+<div class="form-container">
+    <h2>Send Money</h2>
+    <% if (message) { %>
+        <p class="error"><%= message %></p>
+    <% } %>
+    <form action="/send-money/search" method="POST" class="search-form">
+        <input type="text" name="phone" placeholder="Enter phone number" required>
+        <button type="submit" class="btn-primary">Search</button>
+    </form>
+    <div class="meta">
+        <a href="/make-payments">← Back</a>
+    </div>
+</div>
+</body>
+</html>

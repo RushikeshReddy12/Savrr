@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/make-payments.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <h1>Make Payments</h1>
+        <div class="button-grid">
+            <form action="/send-money" method="get">
+                <button type="submit" class="dashboard-btn">Send Money</button>
+            </form>
+            <form action="/pay-bills" method="get">
+                <button type="submit" class="dashboard-btn">Pay Bills</button>
+            </form>
+        </div>
+        <div style="margin-top: 20px;">
+            <a href="/dashboard" class="dashboard-btn" style="display:inline-block;text-decoration:none;text-align:center;">← Back to Dashboard</a>
+        </div>
+    </div>
+</body>
+</html>

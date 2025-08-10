@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/edit-account.css">
+</head>
+<body>
+  <div class="form-container">
+    <h2>Edit Account</h2>
+    <form action="/edit-account/<%= account.id %>" method="POST">
+      <div class="form-row">
+        <label>Account Number</label>
+        <input name="account_number" value="<%= account.account_number %>" disabled>
+      </div>
+      <div class="form-row">
+        <label>Bank Name</label>
+        <input name="bank_name" value="<%= account.bank_name %>" required>
+      </div>
+      <div class="form-row">
+        <label>Shortcut Name</label>
+        <input name="shortcut_name" value="<%= account.shortcut_name %>">
+      </div>
+      <div class="form-row">
+        <label>Income per Month</label>
+        <input name="income_per_month" type="number" step="0.01" value="<%= account.income_per_month %>">
+      </div>
+      <button class="btn-primary" type="submit">Save Changes</button>
+    </form>
+    <div class="meta">
+      <a href="/dashboard">← Back to Dashboard</a>
+    </div>
+  </div>
+</body>
+</html>

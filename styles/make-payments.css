@@ -1,0 +1,66 @@
+/* ===== Make Payments Styling ===== */
+
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(to right, #ffecd2, #fcb69f);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Center container */
+.dashboard-container {
+  text-align: center;
+  padding: 2rem;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  animation: fadeIn 0.8s ease-out;
+  max-width: 600px;
+  width: 100%;
+}
+
+.dashboard-container h1 {
+  color: #ff7e5f;
+  margin-bottom: 2rem;
+}
+
+.button-grid {
+  display: flex;
+  flex-wrap: wrap; /* Allows wrapping into rows */
+  justify-content: center;
+  gap: 20px;
+}
+
+.dashboard-btn {
+  background: linear-gradient(90deg, #ff7e5f, #feb47b);
+  color: white;
+  padding: 15px 25px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.3s ease;
+  flex: 0 0 calc(50% - 20px); /* 2 buttons per row */
+  box-sizing: border-box;
+}
+
+.dashboard-btn:hover {
+  transform: translateY(-3px) scale(1.05);
+  background: linear-gradient(90deg, #eb6750, #ff9966);
+}
+
+a.dashboard-btn {
+  display: inline-block;
+  text-decoration: none;
+  text-align: center;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}

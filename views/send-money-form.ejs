@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Send Money</title>
+    <link rel="stylesheet" href="/send-money.css">
+</head>
+<body>
+<div class="form-container">
+    <h2>Send Money to <%= recipient.username %></h2>
+    <form action="/send-money/<%= recipient.id %>" method="POST">
+        <div class="form-row">
+            <label>Phone</label>
+            <input type="text" value="<%= recipient.phone %>" disabled>
+        </div>
+        <div class="form-row">
+            <label>Amount</label>
+            <input type="number" step="0.01" name="amount" required>
+        </div>
+        <div class="form-row">
+            <label>Note (optional)</label>
+            <input type="text" name="note">
+        </div>
+        <button type="submit" class="btn-primary">Send</button>
+    </form>
+    <div class="meta">
+        <a href="/send-money">← Back</a>
+    </div>
+</div>
+</body>
+</html>

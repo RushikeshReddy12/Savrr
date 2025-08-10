@@ -1,0 +1,113 @@
+/* ===== Match Dashboard Theme ===== */
+
+/* Page background & font */
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(to right, #ffecd2, #fcb69f);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Centered white container */
+.edit-container,
+.form-container {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  text-align: center;
+  max-width: 800px;
+  width: 100%;
+  animation: fadeIn 0.8s ease-out;
+}
+
+h1, h2 {
+  color: #ff7e5f;
+  margin-bottom: 1.5rem;
+}
+
+/* Button grid for list page */
+.button-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.dashboard-btn {
+  background: linear-gradient(90deg, #ff7e5f, #feb47b);
+  color: white;
+  padding: 15px 25px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  flex: 0 0 calc(50% - 20px); /* 2 per row */
+  box-sizing: border-box;
+  transition: transform 0.2s ease, background 0.3s ease;
+}
+
+.dashboard-btn:hover {
+  transform: translateY(-3px) scale(1.05);
+  background: linear-gradient(90deg, #eb6750, #ff9966);
+}
+
+/* Form styling */
+.form-row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+label {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+input {
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.btn-primary {
+  background: linear-gradient(90deg, #ff7e5f, #feb47b);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(90deg, #eb6750, #ff9966);
+  transform: translateY(-2px);
+}
+
+/* Back link */
+.meta {
+  margin-top: 1rem;
+}
+
+.meta a {
+  color: #ff7e5f;
+  text-decoration: none;
+}
+
+.meta a:hover {
+  text-decoration: underline;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
