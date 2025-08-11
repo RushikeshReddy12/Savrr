@@ -220,5 +220,46 @@ app.post("/send-money/:id", async (req, res) => {
     }
 });
 
+app.get('/check-balance', async (req, res) => {
+  if (!req.session.userId) return res.redirect('/login');
+
+  try {
+    const result = await pool.query(
+      'SELECT id, shortcut_name, bank_name FROM accounts WHERE user_id = $1',
+      [req.session.userId]
+    );
+
+    res.render('check-balance-list', {
+      title: 'Check Balance',
+      accounts: result.rows
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
+app.get('/check-balance/:id', async (req, res) => {
+  try {
+    const accountResult = await pool.query(
+      'SELECT account_number, bank_name, shortcut_name, initial_balance FROM accounts WHERE id = $1 AND user_id = $2',
+      [req.params.id, req.session.userId]
+    );
+
+    if (accountResult.rows.length === 0) {
+      return res.status(404).send('Account not found');
+    }
+
+    const account = accountResult.rows[0];
+    res.render('check-balance-view', {
+      title: 'Check Balance',
+      account
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
 const PORT = process.env.PORT;
 app.listen(PORT, () => console.log(`Savrr running on port ${PORT}`));

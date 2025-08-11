@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/check-balance.css">
+</head>
+<body>
+  <div class="balance-container">
+    <h2><%= account.shortcut_name %> - <%= account.bank_name %></h2>
+    <p>Account Number: <%= account.account_number %></p>
+    <div class="balance-box">
+      Balance: ₹<%= Number(account.initial_balance).toFixed(2) %>
+    </div>
+    <div class="meta">
+      <a href="/check-balance">← Back</a>
+    </div>
+  </div>
+</body>
+</html>

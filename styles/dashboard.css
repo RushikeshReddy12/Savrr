@@ -3,7 +3,7 @@
 /* Page layout */
 body {
   font-family: Arial, sans-serif;
-  background: linear-gradient(to right, #ffecd2, #fcb69f);
+  background: linear-gradient(120deg, #f6d365, #fda085); /* Same as check-balance */
   margin: 0;
   padding: 0;
   min-height: 100vh;
@@ -19,7 +19,9 @@ body {
   background: white;
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-  animation: fadeIn 0.8s ease-out;
+  animation: fadeIn 0.5s ease-in-out;
+  max-width: 500px;
+  width: 100%;
 }
 
 /* Title */
@@ -28,64 +30,35 @@ body {
   margin-bottom: 2rem;
 }
 
-.dashboard-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1.5rem;
-  max-width: 800px;
-  margin: 0 auto;
+/* Button grid: 3 rows × 2 columns */
+.button-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 columns */
+  gap: 15px 20px; /* row gap, column gap */
+  justify-items: center; /* center buttons in their cells */
 }
 
-.dashboard-buttons button {
-  flex: 0 1 220px; /* width for each button */
+/* Buttons */
+.dashboard-btn {
+  background: linear-gradient(90deg, #ff7e5f, #feb47b);
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+  min-width: 150px;
+  text-decoration: none; /* remove underline from <a> */
+  display: inline-block; /* ensures padding works for <a> */
 }
-
 
 .dashboard-btn:hover {
-  transform: translateY(-3px) scale(1.05);
-  background: linear-gradient(90deg, #eb6750, #ff9966);
+  transform: translateY(-2px);
 }
 
 /* Animation */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-20px); }
   to { opacity: 1; transform: translateY(0); }
-}
-
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    text-align: center;
-    padding: 30px;
-}
-
-.dashboard-container {
-    max-width: 800px;
-    margin: auto;
-}
-
-h1 {
-    color: #333;
-    margin-bottom: 30px;
-}
-
-.button-grid {
-    display: flex;
-    flex-wrap: wrap; /* allows multiple rows */
-    justify-content: center;
-    gap: 20px;
-}
-
-.dashboard-btn {
-    background-color: #007bff;
-    color: white;
-    padding: 15px 25px;
-    text-decoration: none;
-    background: linear-gradient(90deg, #ff7e5f, #feb47b);
-    border-radius: 8px;
-    font-size: 16px;
-    transition: background 0.3s ease;
-    flex: 0 0 calc(50% - 20px); /* 2 buttons per row */
-    box-sizing: border-box;
 }
