@@ -194,13 +194,13 @@ app.post("/send-money/:id", async (req, res) => {
 
         // Deduct from sender
         await pool.query(
-            "UPDATE accounts SET balance = balance - $1 WHERE user_id = $2",
+            "UPDATE accounts SET initial_balance = initial_balance - $1 WHERE user_id = $2",
             [amount, senderId]
         );
 
         // Add to receiver
         await pool.query(
-            "UPDATE accounts SET balance = balance + $1 WHERE user_id = $2",
+            "UPDATE accounts SET initial_balance = initial_balance + $1 WHERE user_id = $2",
             [amount, receiverId]
         );
 
