@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Send Money - Fill Details - Savrr</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Send Money</h1>
+    <p>From: <%= senderUsername %></p>
+    <p>To: <%= receiverUsername %></p>
+
+    <% if (message) { %>
+      <p style="color: red;"><%= message %></p>
+    <% } %>
+
+    <form method="POST" action="/send-money">
+      <label for="senderAccount">Select Your Account</label>
+      <select id="senderAccount" name="senderAccountId" required>
+        <% senderAccounts.forEach(acc => { %>
+          <option value="<%= acc.id %>"><%= acc.shortcut_name %></option>
+        <% }) %>
+      </select>
+
+      <label for="receiverAccount">Select Receiver's Account</label>
+      <select id="receiverAccount" name="receiverAccountId" required>
+        <% receiverAccounts.forEach(acc => { %>
+          <option value="<%= acc.id %>"><%= acc.shortcut_name %></option>
+        <% }) %>
+      </select>
+
+      <label for="amount">Amount (₹)</label>
+      <input type="number" step="0.01" min="1" id="amount" name="amount" required placeholder="Enter amount" />
+
+      <label for="note">Note (optional)</label>
+      <input type="text" id="note" name="note" placeholder="Add a note" />
+
+      <button type="submit">Send Money</button>
+    </form>
+
+    <p><a href="/dashboard" class="btn">Back to Dashboard</a></p>
+  </div>
+</body>
+</html>

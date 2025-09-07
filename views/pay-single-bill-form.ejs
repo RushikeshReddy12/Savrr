@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pay Bill - <%= bill.billname %></title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Pay Bill: <%= bill.billname %></h1>
+    <p>Amount to pay: ₹<%=Number(bill.amount).toFixed(2) %></p>
+    <p>Due date: <%= bill.lastdate.toISOString().slice(0,10) %></p>
+
+    <% if (warning) { %>
+      <div class="warning">
+        <p><strong>Warning:</strong> <%= warning %></p>
+        <p>Paying this bill will reduce your credit score by 7%.</p>
+      </div>
+    <% } %>
+
+    <form method="POST" action="/pay-bills/pay/<%= bill.id %>">
+      <label for="senderAccount">Select Account</label>
+      <select name="senderAccountId" id="senderAccount" required>
+        <% accounts.forEach(acc => { %>
+          <option value="<%= acc.id %>"><%= acc.shortcut_name %></option>
+        <% }) %>
+      </select>
+
+      <% if (warning) { %>
+        <label>
+          <input type="checkbox" name="overrideWarning" value="true" required>
+          I understand the penalty and want to proceed anyway
+        </label>
+      <% } %>
+
+      <button type="submit">Pay Bill</button>
+    </form>
+
+    <p><a href="/pay-bills" class="btn">Back to Bills</a></p>
+  </div>
+</body>
+</html>

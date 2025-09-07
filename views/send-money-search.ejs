@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Send Money - Search Receiver - Savrr</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Send Money</h1>
+    <p>Welcome, <%= username %></p>
+
+    <% if (message) { %>
+      <p style="color: red;"><%= message %></p>
+    <% } %>
+
+    <form method="POST" action="/send-money/search">
+      <label for="phone">Enter Receiver's Phone Number</label>
+      <input type="text" id="phone" name="phone" required pattern="[0-9]{10}" placeholder="10-digit phone number" />
+      <button type="submit">Search</button>
+    </form>
+
+    <p><a href="/dashboard" class="btn">Back to Dashboard</a></p>
+  </div>
+</body>
+</html>

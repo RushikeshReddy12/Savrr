@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Edit Account - Savrr</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Edit Account</h1>
+
+    <% if (accounts.length === 0) { %>
+      <p>No accounts found. <a href="/create-account">Create one here</a>.</p>
+    <% } else { %>
+      <% accounts.forEach(account => { %>
+        <form action="/edit-account" method="POST" style="margin-bottom: 40px; border-bottom: 1px solid #ccc; padding-bottom: 15px;">
+          <input type="hidden" name="id" value="<%= account.id %>" />
+
+          <div>
+            <label for="account_name_<%= account.id %>">Account Name:</label>
+            <input type="text" id="account_name_<%= account.id %>" name="account_name" value="<%= account.account_name %>" required />
+          </div>
+
+          <div>
+            <label for="account_number_<%= account.id %>">Account Number:</label>
+            <input type="text" id="account_number_<%= account.id %>" name="account_number" value="<%= account.account_number %>" required />
+          </div>
+
+          <div>
+            <label for="ifsc_code_<%= account.id %>">IFSC Code:</label>
+            <input type="text" id="ifsc_code_<%= account.id %>" name="ifsc_code" value="<%= account.ifsc_code %>" required />
+          </div>
+
+          <div>
+            <label for="shortcut_name_<%= account.id %>">Shortcut Name:</label>
+            <input type="text" id="shortcut_name_<%= account.id %>" name="shortcut_name" value="<%= account.shortcut_name %>" />
+          </div>
+
+          <div>
+            <label for="pincode_<%= account.id %>">Pincode:</label>
+            <input type="number" id="pincode_<%= account.id %>" name="pincode" value="<%= account.pincode %>" required />
+          </div>
+
+          <div>
+            <label for="income_<%= account.id %>">Income:</label>
+            <input type="number" step="0.01" id="income_<%= account.id %>" name="income" value="<%= account.income %>" required />
+          </div>
+
+          <button type="submit">Update Account</button>
+        </form>
+      <% }) %>
+    <% } %>
+    <p><a href="/dashboard" class="btn">Back to Dashboard</a></p>
+  </div>
+</body>
+</html>

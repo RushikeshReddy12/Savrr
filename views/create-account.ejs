@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Create Account - Savrr</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Create Account</h1>
+    <form action="/create-account" method="POST">
+
+      <div>
+        <label for="account_name">Account Name:</label>
+        <input type="text" id="account_name" name="account_name" required />
+      </div>
+
+      <div>
+        <label for="account_number">Account Number:</label>
+        <input type="text" id="account_number" name="account_number" required />
+      </div>
+
+      <div>
+        <label for="ifsc_code">IFSC Code:</label>
+        <input type="text" id="ifsc_code" name="ifsc_code" required />
+      </div>
+
+      <div>
+        <label for="shortcut_name">Shortcut Name:</label>
+        <input type="text" id="shortcut_name" name="shortcut_name" />
+      </div>
+
+      <div>
+        <label for="pincode">Pincode:</label>
+        <input type="number" id="pincode" name="pincode" required />
+      </div>
+
+      <div>
+        <label for="income">Income:</label>
+        <input type="number" step="0.01" id="income" name="income" required />
+      </div>
+
+      <button type="submit">Create Account</button>
+    </form>
+    <p><a href="/dashboard" class="btn">Back to Dashboard</a></p>
+  </div>
+</body>
+</html>

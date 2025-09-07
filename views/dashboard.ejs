@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard - Savrr</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>    
+    <div class="container">
+      <h1>Welcome, <%= username %>!</h1>
+      <p>Your current credit score is: <strong><%= creditScore %></strong></p>
+      
+      <a href="/create-account" class="btn">Create Account</a>
+      <a href="/edit-account" class="btn">Edit Account</a>
+      <a href="/check-balance" class="btn">Check Balance</a>
+      <a href="/make-payments" class="btn">Make Payments</a>
+      <a href="/reports" class="btn">Reports</a>
+      <a href="/manage-divisions" class="btn">Manage Divisions</a>
+      
+      <a href="/logout" class="btn" style="margin-top:30px; background-color:#dc3545;">Logout</a>
+    </div>
+</body>
+</html>

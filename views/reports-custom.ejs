@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Custom Reports - Savrr</title>
+  <link rel="stylesheet" href="/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Custom Report</h1>
+    <p>Welcome, <%= username %></p>
+
+    <form id="chartForm">
+      <label for="categorySelect">Select Category</label>
+      <select id="categorySelect" name="category" required>
+        <option value="">-- Select Category --</option>
+        <% categories.forEach(function(cat) { %>
+          <option value="<%= cat %>"><%= cat %></option>
+        <% }) %>
+      </select>
+
+      <label for="chartTypeSelect">Select Chart Type</label>
+      <select id="chartTypeSelect" name="chartType" required>
+        <option value="">-- Select Chart Type --</option>
+        <option value="pie">Pie Chart</option>
+        <option value="bar">Bar Chart</option>
+        <option value="line">Line Chart</option>
+      </select>
+
+      <button type="submit" class="btn">Show Chart</button>
+    </form>
+
+    <div style="margin-top: 30px;">
+      <canvas id="customChart" width="400" height="300"></canvas>
+    </div>
+
+    <p><a href="/reports" class="btn">Back to Reports</a></p>
+  </div>
+
+  <script>
+    const form = document.getElementById('chartForm');
+    const ctx = document.getElementById('customChart').getContext('2d');
+    let chart;
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const params = new URLSearchParams();
+      for (const [key, value] of formData.entries()) {
+        params.append(key, value);
+      }
+
+      try {
+        const response = await fetch('/reports/custom/data', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: params.toString()
+        });
+        const result = await response.json();
+
+        if (response.ok) {
+          if (chart) chart.destroy();
+
+          chart = new Chart(ctx, {
+            type: formData.get('chartType'),
+            data: {
+              labels: result.labels,
+              datasets: [{
+                label: formData.get('category'),
+                data: result.data,
+                backgroundColor: formData.get('chartType') === 'pie' ? 
+                  ['#e74c3c', '#f39c12', '#16a085', '#2980b9', '#8e44ad', '#07cfa5'] : 
+                  '#048cfc',
+                borderColor: '#048cfc',
+                borderWidth: 1,
+                fill: formData.get('chartType') === 'line', 
+                tension: 0.3
+              }]
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                legend: { position: 'top' },
+                title: {
+                  display: true,
+                  text: `Chart of ${formData.get('category')}`
+                }
+              }
+            }
+          });
+        } else {
+          alert(result.error || 'Error fetching chart data');
+        }
+      } catch (err) {
+        alert('Server error fetching chart data');
+      }
+    });
+  </script>
+</body>
+</html>

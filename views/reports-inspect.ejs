@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8" />
+ <title>Inspect - Reports</title>
+ <link rel="stylesheet" href="/style.css" />
+ <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+ <div class="container">
+  <h1>Inspect Financials</h1>
+  <p>Welcome, <%= username %></p>
+
+  <div class="charts-row">
+    <canvas id="expensePie" width="300" height="250"></canvas>
+    <canvas id="incomeLine" width="300" height="250"></canvas>
+    <canvas id="profitBar" width="300" height="250"></canvas>
+  </div>
+
+  <p><a href="/reports" class="btn">Back to Reports</a></p>
+ </div>
+ <script>
+  // Data variables injected from server:
+  const pieLabels = <%- JSON.stringify(pie.labels) %>;
+  const pieData = <%- JSON.stringify(pie.data) %>;
+  const incomeMonths = <%- JSON.stringify(line.labels) %>;
+  const incomeData = <%- JSON.stringify(line.data) %>;
+  const profitMonths = <%- JSON.stringify(bar.labels) %>;
+  const profitData = <%- JSON.stringify(bar.data) %>;
+
+  new Chart(document.getElementById('expensePie'), {
+   type: 'pie',
+   data: { labels: pieLabels, datasets: [{ data: pieData, backgroundColor: ['#e74c3c', '#f39c12', '#16a085', '#2980b9', '#8e44ad'], }] }
+  });
+
+  new Chart(document.getElementById('incomeLine'), {
+   type: 'line',
+   data: { labels: incomeMonths, datasets: [{ label: 'Income', data: incomeData, borderColor: '#16a085', fill: false }] }
+  });
+
+  new Chart(document.getElementById('profitBar'), {
+   type: 'bar',
+   data: { labels: profitMonths, datasets: [{ label: 'Profit', data: profitData, backgroundColor: '#2980b9' }] }
+  });
+ </script>
+</body>
+</html>

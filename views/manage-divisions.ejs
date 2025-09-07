@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Manage Divisions</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Manage Divisions</h1>
+    <button class="btn add-btn" onclick="document.getElementById('addModal').style.display='flex'">Add</button>
+    <table class="divisions-table">
+      <thead>
+        <tr><th>Account Shortcut</th><th>Division Name</th><th>Amount</th></tr>
+      </thead>
+      <tbody>
+        <% divisions.forEach(function(div) { %>
+          <tr>
+            <td><%= div.accountshortcutname %></td>
+            <td><%= div.nameofthedivision %></td>
+            <td><%= div.amount %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+    <a href="/dashboard" class="btn">Back to Dashboard</a>
+    <!-- Modal for Add Form -->
+    <div class="modal" id="addModal" onclick="if(event.target==this)this.style.display='none'">
+      <div class="modal-content">
+        <form method="post" action="/manage-divisions/add">
+          <label>Account Shortcut Name:
+            <select name="accountshortcutname" required>
+              <% accountShortcuts.forEach(function(s) { %>
+                <option value="<%= s.shortcut_name %>"><%= s.shortcut_name %></option>
+              <% }) %>
+            </select>
+          </label><br/><br/>
+          <label>Amount:
+            <input type="number" name="amount" min="1" required />
+          </label><br/><br/>
+          <label>Name Of The Division:
+             <select name="nameofthedivision" required>
+               <option value="Electricity Bill">Electricity Bill</option>
+               <option value="Water Bill">Water Bill</option>
+               <option value="Paper Bill">Paper Bill</option>
+            </select>
+          </label>
+          <br/><br/>
+          <button type="submit" class="btn">Add Division</button>
+        </form>
+        <p><a href="/dashboard" class="btn">Back to Dashboard</a></p>
+      </div>
+    </div>
+    <% if (error) { %>
+      <div style="color:red; margin-top:20px;"><%= error %></div>
+    <% } %>
+  </div>
+</body>
+</html>

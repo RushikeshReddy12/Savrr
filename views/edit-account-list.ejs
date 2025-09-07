@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Select Account to Edit - Savrr</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Select Account to Edit</h1>
+
+    <% if (accounts.length === 0) { %>
+      <p>No accounts found. <a href="/create-account">Create one here</a>.</p>
+    <% } else { %>
+      <ul>
+        <% accounts.forEach(account => { %>
+          <li>
+            <a href="/edit-account/<%= account.id %>">
+              <strong><%= account.account_name %></strong>
+              <% if (account.shortcut_name) { %>
+                (<%= account.shortcut_name %>)
+              <% } %>
+            </a>
+          </li>
+        <% }) %>
+      </ul>
+    <% } %>
+
+    <p><a href="/dashboard" class="btn">Back to Dashboard</a></p>
+  </div>
+</body>
+</html>

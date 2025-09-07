@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pending Bills - Savrr</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Pending Bills for <%= username %></h1>
+
+    <% if (bills.length === 0) { %>
+      <p>No bills to pay right now.</p>
+    <% } else { %>
+      <table>
+        <thead>
+          <tr>
+            <th>Bill Name</th>
+            <th>Amount (₹)</th>
+            <th>Last Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% bills.forEach(bill => { %>
+            <tr>
+              <td><%= bill.billname %></td>
+              <td><%= Number(bill.amount).toFixed(2) %></td>
+              <td><%= bill.lastdate.toISOString().slice(0,10) %></td>
+              <td>
+                <form method="GET" action="/pay-bills/pay/<%= bill.id %>">
+                  <button type="submit">Pay</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+
+    <p><a href="/dashboard" class="btn">Back to Dashboard</a></p>
+  </div>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Transactions Report - Savrr</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Transactions</h1>
+    <p>User: <%= username %></p>
+
+    <% if (transactions.length === 0) { %>
+      <p>No transactions found.</p>
+    <% } else { %>
+      <table class="transactions-table">
+        <thead>
+          <tr>
+            <th>Sender Account</th>
+            <th>Receiver Account</th>
+            <th>Amount (₹)</th>
+            <th>Narration</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% transactions.forEach(tx => { %>
+            <tr>
+              <td><%= tx.senderaccount %></td>
+              <td><%= tx.receiveraccount %></td>
+              <td><%= Number(tx.amount).toFixed(2) %></td>
+              <td><%= tx.narration %></td>
+              <td><%= new Date(tx.timeoftransaction).toLocaleString() %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+
+    <p><a href="/reports" class="btn">Back to Reports</a></p>
+  </div>
+</body>
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Account Balance - Savrr</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Balance for Account: <%= account.account_name %></h1>
+    <p><strong>Balance:</strong> ₹<%= Number(account.balance).toFixed(2) %></p>
+
+    <p><a href="/check-balance" class="btn">Back to Account List</a></p>
+    <p><a href="/dashboard" class="btn">Back to Dashboard</a></p>
+  </div>
+</body>
+</html>
