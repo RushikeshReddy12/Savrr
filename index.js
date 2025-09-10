@@ -605,6 +605,26 @@ app.post('/pay-bills/pay/:billId', checkAuth, async (req, res) => {
       }
 
       await client.query('COMMIT');
+      if (divisionAmount !== null && amount <= divisionAmount) {
+        const today = new Date();
+        const dueDate = new Date(bill.lastdate);
+        if (today <= dueDate) {
+         // On-time payment within division
+          const csResult = await pool.query(
+           'SELECT creditscore FROM usercreditscores WHERE username = $1',
+        [req.session.username]
+        );
+        if (csResult.rows.length > 0) {
+        const currentScore = parseFloat(csResult.rows[0].creditscore);
+        const increasedScore = Math.min(100, currentScore * 1.02); // Increase by 2%, max 100
+        await pool.query(
+         'UPDATE usercreditscores SET creditscore = $1 WHERE username = $2',
+          [increasedScore, req.session.username]
+        );
+          }
+        }
+      }
+
       res.send('Bill paid successfully.');
     } catch (err) {
       await client.query('ROLLBACK');
