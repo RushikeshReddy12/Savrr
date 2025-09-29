@@ -15,6 +15,7 @@
       <label for="categorySelect">Select Category</label>
       <select id="categorySelect" name="category" required>
         <option value="">-- Select Category --</option>
+        <option value="all">-- All Categories --</option>
         <% categories.forEach(function(cat) { %>
           <option value="<%= cat %>"><%= cat %></option>
         <% }) %>

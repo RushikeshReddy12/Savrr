@@ -805,69 +805,111 @@ app.get('/reports/custom', checkAuth, async (req, res) => {
   }
 });
 
-// API endpoint to fetch data for selected chart and category
 app.post('/reports/custom/data', checkAuth, async (req, res) => {
   const { category, chartType } = req.body;
   const username = req.session.username;
 
   try {
-    let data = {};
     let labels = [];
+    let data = [];
 
-    if (chartType === 'pie' && category) {
-      // Pie chart: Sum amounts grouped by narration category filtered by category included (or all)
-      const pieResult = await pool.query(
-        `SELECT narration AS label, SUM(amount) AS value
-         FROM usertransactions 
-         WHERE senderusername = $1
-         AND narration ILIKE $2
-         AND amount > 0
-         GROUP BY narration`,
-         [username, `%${category}%`]
-      );
-      labels = pieResult.rows.map(r => r.label);
-      data = pieResult.rows.map(r => parseFloat(r.value));
-    
-    } else if (chartType === 'bar' && category) {
-      // Bar chart: Monthly sums filtered by narration category within past year
-      const fromDate = new Date();  
+    // Helper: Determine if "all categories"
+    const isAll = !category || category === 'all';
+
+    if (chartType === 'pie') {
+      // Pie chart: Sum of all expenses grouped by narration
+      if (isAll) {
+        const pieResult = await pool.query(
+          `SELECT narration AS label, SUM(amount) AS value
+           FROM usertransactions
+           WHERE senderusername = $1
+           AND amount > 0
+           GROUP BY narration`,
+          [username]
+        );
+        labels = pieResult.rows.map(r => r.label || "Uncategorized");
+        data = pieResult.rows.map(r => parseFloat(r.value));
+      } else {
+        const pieResult = await pool.query(
+          `SELECT narration AS label, SUM(amount) AS value
+           FROM usertransactions
+           WHERE senderusername = $1
+           AND narration ILIKE $2
+           AND amount > 0
+           GROUP BY narration`,
+          [username, `%${category}%`]
+        );
+        labels = pieResult.rows.map(r => r.label || "Uncategorized");
+        data = pieResult.rows.map(r => parseFloat(r.value));
+      }
+    } else if (chartType === 'bar') {
+      // Bar chart: Monthly sum of expenses, optionally filtered by category
+      const fromDate = new Date();
       fromDate.setMonth(fromDate.getMonth() - 11);
       const fromDateStr = fromDate.toISOString();
 
-      const barResult = await pool.query(
-        `SELECT TO_CHAR(timeoftransaction, 'Mon YYYY') AS month, SUM(amount) AS total
-         FROM usertransactions
-         WHERE senderusername = $1
-         AND narration ILIKE $2
-         AND amount > 0
-         AND timeoftransaction >= $3
-         GROUP BY month
-         ORDER BY MIN(timeoftransaction)`,
-         [username, `%${category}%`, fromDateStr]
-      );
-      labels = barResult.rows.map(r => r.month);
-      data = barResult.rows.map(r => parseFloat(r.total));
-    
-    } else if (chartType === 'line' && category) {
-      // Line chart: Monthly totals for income transactions (amount < 0)
-      const fromDate = new Date();  
+      if (isAll) {
+        const barResult = await pool.query(
+          `SELECT TO_CHAR(timeoftransaction, 'Mon YYYY') AS month, SUM(amount) AS total
+           FROM usertransactions
+           WHERE senderusername = $1
+           AND amount > 0
+           AND timeoftransaction >= $2
+           GROUP BY month
+           ORDER BY MIN(timeoftransaction)`,
+          [username, fromDateStr]
+        );
+        labels = barResult.rows.map(r => r.month);
+        data = barResult.rows.map(r => parseFloat(r.total));
+      } else {
+        const barResult = await pool.query(
+          `SELECT TO_CHAR(timeoftransaction, 'Mon YYYY') AS month, SUM(amount) AS total
+           FROM usertransactions
+           WHERE senderusername = $1
+           AND narration ILIKE $2
+           AND amount > 0
+           AND timeoftransaction >= $3
+           GROUP BY month
+           ORDER BY MIN(timeoftransaction)`,
+          [username, `%${category}%`, fromDateStr]
+        );
+        labels = barResult.rows.map(r => r.month);
+        data = barResult.rows.map(r => parseFloat(r.total));
+      }
+    } else if (chartType === 'line') {
+      // Line chart: Monthly sum of incomes, optionally filtered by category
+      const fromDate = new Date();
       fromDate.setMonth(fromDate.getMonth() - 11);
       const fromDateStr = fromDate.toISOString();
 
-      const lineResult = await pool.query(
-        `SELECT TO_CHAR(timeoftransaction, 'Mon YYYY') AS month, SUM(ABS(amount)) AS total
-         FROM usertransactions
-         WHERE senderusername = $1
-         AND narration ILIKE $2
-         AND amount < 0
-         AND timeoftransaction >= $3
-         GROUP BY month
-         ORDER BY MIN(timeoftransaction)`,
-         [username, `%${category}%`, fromDateStr]
-      );
-      labels = lineResult.rows.map(r => r.month);
-      data = lineResult.rows.map(r => parseFloat(r.total));
-    
+      if (isAll) {
+        const lineResult = await pool.query(
+          `SELECT TO_CHAR(timeoftransaction, 'Mon YYYY') AS month, SUM(amount) AS total
+          FROM usertransactions
+          WHERE senderusername = $1
+          AND amount > 0
+          AND timeoftransaction >= $2
+          GROUP BY month
+          ORDER BY MIN(timeoftransaction)`,
+          [username, fromDateStr]
+        );
+        labels = lineResult.rows.map(r => r.month);
+        data = lineResult.rows.map(r => parseFloat(r.total));
+      } else {
+        const lineResult = await pool.query(
+          `SELECT TO_CHAR(timeoftransaction, 'Mon YYYY') AS month, SUM(ABS(amount)) AS total
+           FROM usertransactions
+           WHERE senderusername = $1
+           AND narration ILIKE $2
+           AND amount > 0
+           AND timeoftransaction >= $3
+           GROUP BY month
+           ORDER BY MIN(timeoftransaction)`,
+          [username, `%${category}%`, fromDateStr]
+        );
+        labels = lineResult.rows.map(r => r.month);
+        data = lineResult.rows.map(r => parseFloat(r.total));
+      }
     } else {
       return res.status(400).json({ error: 'Invalid chart type or category' });
     }
@@ -879,7 +921,6 @@ app.post('/reports/custom/data', checkAuth, async (req, res) => {
     res.status(500).json({ error: 'Server error fetching data' });
   }
 });
-
 
 // Show divisions table and add form (GET)
 app.get('/manage-divisions', checkAuth, async (req, res) => {
