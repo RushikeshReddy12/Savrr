@@ -10,11 +10,11 @@ const port = process.env.PORT || 3000;
 
 // PostgreSQL pool setup (use your config)
 const pool = new Pool({
-  user: "postgres",
-  host: "localhost",
-  database: "mps",
-  password: "Rushi-2005",
-  port: 5432
+  user: process.env.PGUSER,
+  host: process.env.PGHOST,
+  database: process.env.PGDATABASE,
+  password: process.env.PGPASSWORD,
+  port: parseInt(process.env.PGPORT, 10) || 5432
 });
 
 // Session middleware setup
