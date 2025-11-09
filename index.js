@@ -8,7 +8,6 @@ const saltRounds = 10;
 const app = express();
 const port = process.env.PORT || 3000;
 
-// PostgreSQL pool setup (use your config)
 const pool = new Pool({
   user: process.env.PGUSER,
   host: process.env.PGHOST,
@@ -17,22 +16,18 @@ const pool = new Pool({
   port: parseInt(process.env.PGPORT, 10) || 5432
 });
 
-// Session middleware setup
 app.use(session({
-  secret: 'your_secret_key',  // replace with a strong secret key
+  secret: 'your_secret_key',
   resave: false,
   saveUninitialized: false
 }));
 
-// EJS view engine setup
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Middleware for static files and parsing request bodies
 app.use(express.static(path.join(__dirname, 'styles')));
 app.use(express.urlencoded({ extended: true }));
 
-// Middleware to check login for protected routes
 function checkAuth(req, res, next) {
   if (!req.session.username) {
     return res.redirect('/');
@@ -50,7 +45,7 @@ function encrypt(text) {
   const cipher = crypto.createCipheriv(algorithm, key, iv);
   let encrypted = cipher.update(text, 'utf8', 'hex');
   encrypted += cipher.final('hex');
-  return iv.toString('hex') + ':' + encrypted;  // store IV with encrypted text
+  return iv.toString('hex') + ':' + encrypted;
 }
 
 function decrypt(data) {
@@ -63,17 +58,14 @@ function decrypt(data) {
   return decrypted;
 }
 
-// Home route (no login required)
 app.get('/', (req, res) => {
   res.render('index', { title: 'Savrr Home' });
 });
 
-// Login page route (no login required)
 app.get('/login', (req, res) => {
   res.render('login');
 });
 
-// Register page route (no login required)
 app.get('/register', (req, res) => {
   res.render('register');
 });
@@ -113,7 +105,6 @@ app.post('/register', async (req, res) => {
   }
 });
 
-// Protected dashboard route example
 app.get('/dashboard', checkAuth, async (req, res) => {
   try {
     const scoreResult = await pool.query(
@@ -133,7 +124,6 @@ app.get('/dashboard', checkAuth, async (req, res) => {
   }
 });
 
-// Logout route
 app.get('/logout', (req, res) => {
   req.session.destroy((err) => {
     if (err) {
@@ -143,7 +133,6 @@ app.get('/logout', (req, res) => {
   });
 });
 
-// Render create account form - protected route
 app.get('/create-account', checkAuth, (req, res) => {
   res.render('create-account', { username: req.session.username });
 });
@@ -170,7 +159,6 @@ app.post('/create-account', checkAuth, async (req, res) => {
   }
 });
 
-// Show list of accounts to select for editing
 app.get('/edit-account', checkAuth, async (req, res) => {
   try {
     const result = await pool.query(
@@ -198,7 +186,6 @@ app.get('/edit-account/:id', checkAuth, async (req, res) => {
 
     const account = result.rows[0];
 
-    // Decrypt sensitive fields
     account.account_number = decrypt(account.account_number);
     account.ifsc_code = decrypt(account.ifsc_code);
     account.pincode = decrypt(account.pincode);
@@ -210,12 +197,10 @@ app.get('/edit-account/:id', checkAuth, async (req, res) => {
   }
 });
 
-// Handle edit account form submission
 app.post('/edit-account', checkAuth, async (req, res) => {
   const { id, account_name, account_number, ifsc_code, shortcut_name, pincode, income } = req.body;
 
   try {
-    // Encrypt sensitive fields
     const encryptedAccountNumber = encrypt(account_number);
     const encryptedIfscCode = encrypt(ifsc_code);
     const encryptedPincode = encrypt(pincode.toString());
@@ -270,12 +255,10 @@ app.get('/check-balance/:id', checkAuth, async (req, res) => {
   }
 });
 
-// Make Payments page route - protected route
 app.get('/make-payments', checkAuth, (req, res) => {
   res.render('make-payments', { username: req.session.username });
 });
 
-// Show search form to enter receiver's phone number
 app.get('/send-money', checkAuth, (req, res) => {
   res.render('send-money-search', { message: null, username: req.session.username });
 });
@@ -296,7 +279,6 @@ app.post('/send-money/search', checkAuth, async (req, res) => {
   }
 });
 
-// Show send money form with sender's and receiver's accounts dropdown
 app.get('/send-money/form', checkAuth, async (req, res) => {
   const receiverUsername = req.query.receiver;
   const senderUsername = req.session.username;
@@ -344,7 +326,6 @@ app.post('/send-money', checkAuth, async (req, res) => {
     try {
       await client.query('BEGIN');
 
-      // Get sender info including phone and account_name
       const senderAccResult = await client.query(
         `SELECT useraccounts.balance, users.phone, useraccounts.account_name 
          FROM useraccounts 
@@ -368,7 +349,6 @@ app.post('/send-money', checkAuth, async (req, res) => {
         return res.send('Insufficient balance in sender\'s account.');
       }
 
-      // Get receiver info including phone and account_name
       const receiverAccResult = await client.query(
         `SELECT useraccounts.username, users.phone, useraccounts.account_name 
          FROM useraccounts 
@@ -387,7 +367,6 @@ app.post('/send-money', checkAuth, async (req, res) => {
       const receiverPhone = receiverRow.phone || 'N/A';
       const receiverAccountName = receiverRow.account_name;
 
-      // Update balances
       await client.query(
         'UPDATE useraccounts SET balance = balance - $1 WHERE id = $2 AND username = $3',
         [transferAmount, senderAccountId, senderUsername]
@@ -397,7 +376,6 @@ app.post('/send-money', checkAuth, async (req, res) => {
         [transferAmount, receiverAccountId]
       );
 
-      // Insert transaction record with account names
       await client.query(
         `INSERT INTO usertransactions 
           (senderusername, senderaccount, senderphonenumber, receiverusername, receiveraccount, receiverphonenumber, narration, amount, timeoftransaction) 
@@ -429,16 +407,13 @@ app.post('/send-money', checkAuth, async (req, res) => {
   }
 });
 
-// Show payable bills assigned to logged-in user by phone number
 app.get('/pay-bills', checkAuth, async (req, res) => {
   try {
-    // Get user's phone number from users table
     const userResult = await pool.query('SELECT phone FROM users WHERE username = $1', [req.session.username]);
     if (userResult.rows.length === 0) return res.send('User record not found.');
 
     const userPhone = userResult.rows[0].phone;
 
-    // Get all bills assigned to this phone
     const billsResult = await pool.query(
       'SELECT id, billname, amount, lastdate FROM billgenerator WHERE phonenumber = $1',
       [userPhone]
@@ -454,7 +429,6 @@ app.get('/pay-bills', checkAuth, async (req, res) => {
   }
 });
 
-// Show form to pay a particular bill
 app.get('/pay-bills/pay/:billId', checkAuth, async (req, res) => {
   const billId = req.params.billId;
   try {
@@ -465,7 +439,6 @@ app.get('/pay-bills/pay/:billId', checkAuth, async (req, res) => {
 
     const accountsResult = await pool.query('SELECT id, shortcut_name FROM useraccounts WHERE username = $1', [req.session.username]);
 
-    // Fetch divisions for user's accounts with bill name match (case insensitive)
     const divisionsResult = await pool.query(
       `SELECT amount, nameofthedivision, accountshortcutname FROM accountdivisions WHERE username = $1 AND LOWER(nameofthedivision) = LOWER($2)`,
       [req.session.username, bill.billname]
@@ -474,7 +447,7 @@ app.get('/pay-bills/pay/:billId', checkAuth, async (req, res) => {
     res.render('pay-single-bill-form', {
       bill,
       accounts: accountsResult.rows,
-      divisions: divisionsResult.rows, // divisions for bill category
+      divisions: divisionsResult.rows,
       username: req.session.username,
       warning: null
     });
@@ -486,8 +459,7 @@ app.get('/pay-bills/pay/:billId', checkAuth, async (req, res) => {
 
 app.post('/pay-bills/pay/:billId', checkAuth, async (req, res) => {
   const billId = req.params.billId;
-  const { senderAccountId, overrideWarning } = req.body;  // overrideWarning is a hidden field or checkbox to confirm exceeding
-
+  const { senderAccountId, overrideWarning } = req.body; 
   try {
     const client = await pool.connect();
 
@@ -523,7 +495,6 @@ app.post('/pay-bills/pay/:billId', checkAuth, async (req, res) => {
       const senderAccountName = accountResult.rows[0].account_name;
       const shortcutName = accountResult.rows[0].shortcut_name;
 
-      // Fetch division amount for this account and bill category (case insensitive)
       const divisionResult = await client.query(
         'SELECT amount FROM accountdivisions WHERE username = $1 AND accountshortcutname = $2 AND LOWER(nameofthedivision) = LOWER($3)',
         [req.session.username, shortcutName, billName]
@@ -536,12 +507,9 @@ app.post('/pay-bills/pay/:billId', checkAuth, async (req, res) => {
         return res.send('Insufficient balance.');
       }
 
-      // Check if bill amount exceeds division amount
       if (divisionAmount !== null && amount > divisionAmount && !overrideWarning) {
-        // Warning: amount exceeding division limit
         await client.query('ROLLBACK');
 
-        // Reload accounts and divisions for form render with warning
         const accountsResult = await client.query('SELECT id, shortcut_name FROM useraccounts WHERE username = $1', [req.session.username]);
         const divisionsResult = await client.query(
           `SELECT amount, nameofthedivision, accountshortcutname FROM accountdivisions WHERE username = $1 AND LOWER(nameofthedivision) = LOWER($2)`,
@@ -557,18 +525,13 @@ app.post('/pay-bills/pay/:billId', checkAuth, async (req, res) => {
         });
       }
 
-      // Proceed with payment
-
-      // Deduct from user account balance
       await client.query(
         'UPDATE useraccounts SET balance = balance - $1 WHERE id = $2 AND username = $3',
         [amount, senderAccountId, req.session.username]
       );
 
-      // Delete the bill
       await client.query('DELETE FROM billgenerator WHERE id = $1', [billId]);
 
-      // Record transaction
       await client.query(
         `INSERT INTO usertransactions 
           (senderusername, senderaccount, senderphonenumber, receiverusername, receiveraccount, receiverphonenumber, narration, amount, timeoftransaction) 
@@ -585,9 +548,7 @@ app.post('/pay-bills/pay/:billId', checkAuth, async (req, res) => {
         ]
       );
 
-      // Deduct 7% from credit score if exceeding division limit and overrideWarning flag is set
       if (divisionAmount !== null && amount > divisionAmount && overrideWarning) {
-        // Fetch current credit score
         const csResult = await client.query(
           'SELECT creditscore FROM usercreditscores WHERE username = $1',
           [req.session.username]
@@ -595,7 +556,7 @@ app.post('/pay-bills/pay/:billId', checkAuth, async (req, res) => {
 
         if (csResult.rows.length > 0) {
           const currentScore = parseFloat(csResult.rows[0].creditscore);
-          const updatedScore = Math.max(0, currentScore * 0.93); // deduct 7%, floor at 0
+          const updatedScore = Math.max(0, currentScore * 0.93);
 
           await client.query(
             'UPDATE usercreditscores SET creditscore = $1 WHERE username = $2',
@@ -609,14 +570,13 @@ app.post('/pay-bills/pay/:billId', checkAuth, async (req, res) => {
         const today = new Date();
         const dueDate = new Date(bill.lastdate);
         if (today <= dueDate) {
-         // On-time payment within division
           const csResult = await pool.query(
            'SELECT creditscore FROM usercreditscores WHERE username = $1',
         [req.session.username]
         );
         if (csResult.rows.length > 0) {
         const currentScore = parseFloat(csResult.rows[0].creditscore);
-        const increasedScore = Math.min(100, currentScore * 1.02); // Increase by 2%, max 100
+        const increasedScore = Math.min(100, currentScore * 1.02); 
         await pool.query(
          'UPDATE usercreditscores SET creditscore = $1 WHERE username = $2',
           [increasedScore, req.session.username]
@@ -639,12 +599,10 @@ app.post('/pay-bills/pay/:billId', checkAuth, async (req, res) => {
   }
 });
 
-// Reports main page with buttons
 app.get('/reports', checkAuth, (req, res) => {
   res.render('reports', { username: req.session.username });
 });
 
-// Show last 10 transactions of logged-in user
 app.get('/reports/transactions', checkAuth, async (req, res) => {
   try {
     const result = await pool.query(
@@ -666,24 +624,19 @@ app.get('/reports/transactions', checkAuth, async (req, res) => {
 
 app.get('/reports/profitandloss', checkAuth, async (req, res) => {
   try {
-    // Fetch all transactions for logged-in user (for calculations)
     const allTxResult = await pool.query(
       `SELECT amount FROM usertransactions WHERE senderusername = $1`,
       [req.session.username]
     );
-
-    // Fetch all account incomes of the user
     const incomeResult = await pool.query(
       `SELECT income FROM useraccounts WHERE username = $1`,
       [req.session.username]
     );
 
-    // Sum all incomes from accounts
     const totalAccountIncome = incomeResult.rows.reduce((sum, row) => sum + parseFloat(row.income || 0), 0);
 
-    // Calculate net income, net expense from transactions
     const allTransactions = allTxResult.rows;
-    let netIncome = totalAccountIncome; // Start with account income
+    let netIncome = totalAccountIncome; 
     let netExpense = 0;
 
     allTransactions.forEach(tx => {
@@ -696,7 +649,6 @@ app.get('/reports/profitandloss', checkAuth, async (req, res) => {
 
     const profitAndLoss = netIncome - netExpense;
 
-    // Fetch only last 10 transactions to display
     const recentTxResult = await pool.query(
       `SELECT * FROM usertransactions WHERE senderusername = $1 ORDER BY timeoftransaction DESC LIMIT 10`,
       [req.session.username]
@@ -718,16 +670,11 @@ app.get('/reports/profitandloss', checkAuth, async (req, res) => {
 
 app.get('/reports/inspect', checkAuth, async (req, res) => {
   const username = req.session.username;
-   // Pie Chart: Expenses by category (narration)
-  // Line Chart: Monthly income
-   // Bar Chart: Monthly profit
 
    try {
-   // Get past 12 months date range
    const today = new Date();
    const fromDate = new Date(today.getFullYear(), today.getMonth() - 11, 1);
 
-   // Expenses (Pie): group by narration/category, amount > 0
    const pieResult = await pool.query(`
      SELECT narration AS category, SUM(amount) AS total
      FROM usertransactions
@@ -737,7 +684,6 @@ app.get('/reports/inspect', checkAuth, async (req, res) => {
      GROUP BY narration
      `, [username, fromDate]);
 
-   // Income (Line): group by month, amount < 0
    const lineResult = await pool.query(`
      SELECT TO_CHAR(timeoftransaction, 'Mon YYYY') AS month, SUM(ABS(amount)) AS total
      FROM usertransactions
@@ -748,7 +694,6 @@ app.get('/reports/inspect', checkAuth, async (req, res) => {
      ORDER BY MIN(timeoftransaction)
      `, [username, fromDate]);
 
-     // Profit (Bar): for each month, total income - total expense
    const profitResult = await pool.query(`
      SELECT TO_CHAR(timeoftransaction, 'Mon YYYY') AS month,
      SUM(CASE WHEN amount < 0 THEN ABS(amount) ELSE 0 END) AS income,
@@ -760,7 +705,6 @@ app.get('/reports/inspect', checkAuth, async (req, res) => {
      ORDER BY MIN(timeoftransaction)
      `, [username, fromDate]);
 
-     // Prepare chart data
    const pie = {
      labels: pieResult.rows.map(r => r.category || "Uncategorized"),
      data: pieResult.rows.map(r => parseFloat(r.total))
@@ -787,10 +731,9 @@ app.get('/reports/inspect', checkAuth, async (req, res) => {
   }
 });
 
-// Render custom chart selection page
 app.get('/reports/custom', checkAuth, async (req, res) => {
   try {
-    // Fetch unique categories from usertransactions' narration for dropdown
+
     const categoriesResult = await pool.query(
       'SELECT DISTINCT narration FROM usertransactions WHERE senderusername = $1',
       [req.session.username]
@@ -813,11 +756,9 @@ app.post('/reports/custom/data', checkAuth, async (req, res) => {
     let labels = [];
     let data = [];
 
-    // Helper: Determine if "all categories"
     const isAll = !category || category === 'all';
 
     if (chartType === 'pie') {
-      // Pie chart: Sum of all expenses grouped by narration
       if (isAll) {
         const pieResult = await pool.query(
           `SELECT narration AS label, SUM(amount) AS value
@@ -843,7 +784,6 @@ app.post('/reports/custom/data', checkAuth, async (req, res) => {
         data = pieResult.rows.map(r => parseFloat(r.value));
       }
     } else if (chartType === 'bar') {
-      // Bar chart: Monthly sum of expenses, optionally filtered by category
       const fromDate = new Date();
       fromDate.setMonth(fromDate.getMonth() - 11);
       const fromDateStr = fromDate.toISOString();
@@ -877,7 +817,6 @@ app.post('/reports/custom/data', checkAuth, async (req, res) => {
         data = barResult.rows.map(r => parseFloat(r.total));
       }
     } else if (chartType === 'line') {
-      // Line chart: Monthly sum of incomes, optionally filtered by category
       const fromDate = new Date();
       fromDate.setMonth(fromDate.getMonth() - 11);
       const fromDateStr = fromDate.toISOString();
@@ -922,16 +861,13 @@ app.post('/reports/custom/data', checkAuth, async (req, res) => {
   }
 });
 
-// Show divisions table and add form (GET)
 app.get('/manage-divisions', checkAuth, async (req, res) => {
   const username = req.session.username;
   try {
-    // Fetch all divisions for this user
     const divisionsRes = await pool.query(
       'SELECT * FROM accountdivisions WHERE username = $1',
       [username]
     );
-    // Fetch all account shortcut names for this user
     const shortcutsRes = await pool.query(
       'SELECT shortcut_name FROM useraccounts WHERE username = $1',
       [username]
@@ -948,21 +884,18 @@ app.get('/manage-divisions', checkAuth, async (req, res) => {
   }
 });
 
-// Handle add division (POST)
 app.post('/manage-divisions/add', checkAuth, async (req, res) => {
   const username = req.session.username;
   const { accountshortcutname, amount, nameofthedivision } = req.body;
   const amt = parseFloat(amount);
 
   try {
-    // Get selected account income and id
     const accRes = await pool.query(
       'SELECT id, income FROM useraccounts WHERE username = $1 AND shortcut_name = $2',
       [username, accountshortcutname]
     );
 
     if (accRes.rows.length === 0) {
-      // Account not found
       const [divisionsRes, shortcutsRes] = await Promise.all([
         pool.query('SELECT * FROM accountdivisions WHERE username = $1', [username]),
         pool.query('SELECT shortcut_name FROM useraccounts WHERE username = $1', [username])
@@ -977,7 +910,6 @@ app.post('/manage-divisions/add', checkAuth, async (req, res) => {
     const accountId = accRes.rows[0].id;
     const income = parseFloat(accRes.rows[0].income);
 
-    // Constraint 1: entered amount <= account income
     if (amt > income) {
       const [divisionsRes, shortcutsRes] = await Promise.all([
         pool.query('SELECT * FROM accountdivisions WHERE username = $1', [username]),
@@ -990,14 +922,12 @@ app.post('/manage-divisions/add', checkAuth, async (req, res) => {
       });
     }
 
-    // Get sum of existing divisions amount for this account
     const sumRes = await pool.query(
       'SELECT COALESCE(SUM(amount), 0) AS total_divisions FROM accountdivisions WHERE username = $1 AND accountshortcutname = $2',
       [username, accountshortcutname]
     );
     const totalDivisionsAmount = parseFloat(sumRes.rows[0].total_divisions);
 
-    // Constraint 2: new division amount added to existing should not exceed income
     if (amt > (income - totalDivisionsAmount)) {
       const [divisionsRes, shortcutsRes] = await Promise.all([
         pool.query('SELECT * FROM accountdivisions WHERE username = $1', [username]),
@@ -1009,14 +939,11 @@ app.post('/manage-divisions/add', checkAuth, async (req, res) => {
         error: "Total division amounts exceed account income."
       });
     }
-
-    // Insert new division
     await pool.query(
       'INSERT INTO accountdivisions (username, accountshortcutname, amount, nameofthedivision, accountid) VALUES ($1, $2, $3, $4, $5)',
       [username, accountshortcutname, amt, nameofthedivision, accountId]
     );
 
-    // Redirect to updated divisions list without error
     res.redirect('/manage-divisions');
 
   } catch (err) {
@@ -1025,7 +952,6 @@ app.post('/manage-divisions/add', checkAuth, async (req, res) => {
   }
 });
 
-// Start server
 app.listen(port, () => {
   console.log(`Savrr app listening on port ${port}`);
 });
