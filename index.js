@@ -7,13 +7,15 @@ const saltRounds = 10;
 
 const app = express();
 const port = process.env.PORT || 3000;
+require("dotenv").config();
+console.log("DB Password:", process.env.PGPASSWORD); // just to verify
 
 const pool = new Pool({
   user: process.env.PGUSER,
   host: process.env.PGHOST,
   database: process.env.PGDATABASE,
   password: process.env.PGPASSWORD,
-  port: parseInt(process.env.PGPORT, 10) || 5432
+  port: process.env.PGPORT,
 });
 
 app.use(session({
@@ -101,7 +103,9 @@ app.post('/register', async (req, res) => {
     );
     res.redirect('/login');
   } catch (err) {
-    res.status(500).send('Error registering user');
+    console.error("Error registering user:", err.message);
+res.render("register", { error: "Error registering user: " + err.message });
+
   }
 });
 
